@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<style>
+    table, th, td {
+        margin: 30px;
+        border:1px solid black;
+        padding: 5px;
+    }
+</style>
+<body>
+    <table>
+        <tr>
+            <th>Name Surname</th>
+            <th>Login</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th></th>
+            <th></th>
+        </tr>
+        <?php foreach ($users as $user) { ?>
+        <tr>
+            <td><?php echo $user->fullName; ?></td>
+            <td><?php echo $user->login; ?></td>
+            <td><?php echo $user->email; ?></td>
+            <td><?php echo $user->password; ?></td>
+            <td><a href="/admin/useredit/<?php echo $user->id; ?>">Edit</a></td>
+            <td><a href="/admin/userdelete/<?php echo $user->id; ?>">Delete</a></td>
+        </tr>
+        <?php } ?>
+    </table>
+
+    <p><a href="/admin/useradd/">Add new user</a></p>
+</body>

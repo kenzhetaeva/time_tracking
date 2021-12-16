@@ -1,0 +1,24 @@
+<h2>Login</h2>
+
+<form method='post'>
+
+    <?php
+    if($error) {
+         echo $error;
+    }
+    ?>
+    <p>
+        <label>Логин</label>
+        <input type="text" placeholder="Enter your login" name="login">
+    </p>
+
+    <p>
+        <label>Пароль</label>
+        <input type="password" placeholder="Enter your password" name="password">
+    </p>
+
+    <p>
+        <input type='submit' value='Login' />
+    </p>
+
+</form>

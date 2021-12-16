@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "phalcon/migrations": "^2.2",
+        "symfony/var-dumper": "^5.4"
+    }
+}

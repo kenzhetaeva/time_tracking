@@ -1,0 +1,30 @@
+<h2>Edit user</h2>
+
+<form action='/admin/userupdate' method="post">
+
+    <p>
+        <label>Name Surname</label>
+        <input type="text" name="fullName" value="<?php echo $user->fullName?>">
+    </p>
+
+    <p>
+        <label>Login</label>
+        <input type="text" name="login" value="<?php echo $user->login?>">
+
+    </p>
+    <p>
+        <label>Email</label>
+        <input type="email" name="email" value="<?php echo $user->email?>">
+    </p>
+    <p>
+        <label>Password</label>
+        <input type="password" name="password" value="<?php echo $user->password?>">
+    </p>
+
+    <input style="display: none" name="id" value="<?php echo $user->id?>">
+
+    <p>
+        <input type='submit' value='Update' />
+    </p>
+
+</form>
