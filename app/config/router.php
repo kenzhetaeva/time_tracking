@@ -65,4 +65,14 @@ $router->add("/admin/usernew", array(
     "action"     => "usernew",
 ));
 
+$router->add("/start", array(
+    "controller" => "index",
+    "action"     => "start",
+));
+
+$router->add("/stop", array(
+    "controller" => "index",
+    "action"     => "stop",
+));
+
 $router->handle($_SERVER['REQUEST_URI']);

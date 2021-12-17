@@ -18,6 +18,33 @@ class IndexController extends ControllerBase
         $this->authorized();
     }
 
+    public function startAction()
+    {
+        if ($this->request->isPost()) {
+            $userId = $this->request->getPost('userId');
+            $response = TrackingController::startAction((int)$userId);
+
+            if ($response['success']) {
+                exit(json_encode($response));
+            }
+
+        }
+    }
+
+    public function stopAction()
+    {
+        if ($this->request->isPost()) {
+            $userId = $this->request->getPost('userId');
+            $start_time = $this->request->getPost('start_time');
+
+            $response = TrackingController::stopAction((int)$userId, (string)$start_time);
+
+            if ($response['success']) {
+                exit(json_encode($response));
+            }
+        }
+    }
+
     public function checkAdminAction() {
 
     }

@@ -105,5 +105,4 @@ class AdminController extends ControllerBase
             return $this->response->redirect('/admin');
         }
     }
-
 }

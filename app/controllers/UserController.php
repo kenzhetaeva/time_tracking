@@ -34,24 +34,33 @@ class UserController extends Controller
                 if(strcmp($password, $user->password) == 0) {
 //                if ($this->security->checkHash($password, $user->password)) {
 
+                    $lastDate = StaffHours::findFirst
+                    ([
+                        'conditions' => 'user_id = :userId:',
+//                         and start_time = :today:',
+                        'order' => "start_time DESC",
+                        'bind' => [
+                            'userId' => $user->id,
+//                            'today' => DateTime.Today
+                        ]
+                    ]);
+
+                    $this->session->set('AUTH_ID', $user->id);
                     $this->session->set('AUTH_NAME', $user->fullName);
                     $this->session->set('AUTH_LOGIN', $user->login);
                     $this->session->set('AUTH_EMAIL', $user->email);
+                    $this->session->set('AUTH_START_TIME', $lastDate->start_time);
+                    $this->session->set('AUTH_STOP_TIME', $lastDate->stop_time);
 
                     return $this->response->redirect('/mainpage');
-//                    echo $this->view->render('user/tracking_page');
-//                    var_dump(1);
-//                    die();
                 }
                 else {
                     $error = "Incorrect password";
                     $this->view->error = $error;
-//                    return $this->response->redirect('/login');
                 }
             } else {
                 $error = "User not found";
                 $this->view->error = $error;
-//                return $this->response->redirect('/login');
             }
         }
         if($error == "")

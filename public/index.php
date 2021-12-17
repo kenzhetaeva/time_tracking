@@ -42,10 +42,10 @@ try {
             }
 
             //Handle other exceptions
-            $dispatcher->forward(array(
-                'controller' => 'index',
-                'action' => 'show503'
-            ));
+//            $dispatcher->forward(array(
+//                'controller' => 'index',
+//                'action' => 'show503'
+//            ));
 
             return false;
         });

@@ -1,9 +1,101 @@
-<!--<h2>Main Page</h2>-->
+<html>
+    <body>
+    <h4>Welcome to Time Tracking, <?php echo $this->session->get('AUTH_NAME')?></h4>
 
-<h2>Welcome to Time Tracking, <?php echo $this->session->get('AUTH_NAME')?></h2>
+    <p><a href="/admin">Go to Admin Panel</a></p>
 
-<p><a href="/admin">Go to Admin Panel</a></p>
+    <a href="/logout">
+        <input type="button" value="Logout" />
+    </a>
 
-<h6><a href="/logout">Logout</a></h6>
+    <p><a href="#">Change password</a></p>
 
-<input type="button" value="Start">
+    <input style="display: none" id="user_id" value="<?php echo $this->session->get('AUTH_ID')?>">
+
+<!--    <button id="start">-->
+<!--        Start-->
+<!--    </button>-->
+<!--    <button id="stop">-->
+<!--        Stop-->
+<!--    </button>-->
+
+    <?php if($this->session->get('AUTH_STOP_TIME') == NULL && $this->session->get('AUTH_START_TIME') != NULL) {?>
+        <input type="button" id="start" style="display: none" value="Start" />
+        <input type="button" id="stop" value="Stop" />
+    <?php } else {?>
+        <input type="button" id="start" value="Start" />
+        <input type="button" id="stop" style="display: none" value="Stop" />
+    <?php }?>
+
+    <p id="start_time" >Start time: <?php echo $this->session->get('AUTH_START_TIME')?></p>
+    <p id="stop_time">Stop time: <?php echo $this->session->get('AUTH_STOP_TIME')?></p>
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script>
+
+        var startT = '<?php echo $this->session->get('AUTH_START_TIME')?>';
+        $('#start').click(function () {
+            let userId = $('input[id="user_id"]').val();
+
+            var request = new XMLHttpRequest();
+            request.open("POST", '/start', true);
+
+            request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+
+            request.onreadystatechange = function() { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    // Request finished. Do processing here.
+                    var response = JSON.parse(request.response)
+                    if(response.success) {
+                        $("#start_time").html("Start time: " + response.start_time);
+                        $("#stop_time").html("Stop time: ");
+                        startT = response.start_time;
+
+                        $('#start').css({'display':'none'});
+                        $('#stop').css({'display':''});
+
+                        $('#start').click(function(){
+                            $('#start').hide();
+                            $('#stop').show();
+                        });
+                    }
+                    // console.log(response)
+                }
+            }
+            request.send("userId="+userId+"");
+        })
+
+        $('#stop').click(function () {
+            let userId = $('input[id="user_id"]').val();
+            let start_time = startT;
+
+            console.log(startT)
+
+            var request = new XMLHttpRequest();
+            request.open("POST", '/stop', true);
+
+            request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+
+            request.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    var response = JSON.parse(request.response)
+                    if(response.success) {
+                        $("#start_time").html("Start time: " + response.start_time);
+                        $("#stop_time").html("Stop time: " + response.stop_time);
+
+                        $('#start').css({'display':''});
+                        $('#stop').css({'display':'none'});
+
+                        $('#stop').click(function(){
+                            $('#start').show();
+                            $('#stop').hide();
+                        });
+                    }
+                }
+            }
+
+            request.send("userId="+userId+"&start_time="+start_time);
+        })
+    </script>
+    </body>
+</html>
