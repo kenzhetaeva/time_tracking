@@ -14,15 +14,24 @@
             <th>Login</th>
             <th>Email</th>
             <th>Password</th>
+            <th>Arrived Time</th>
             <th></th>
             <th></th>
         </tr>
-        <?php foreach ($users as $user) { ?>
+        <?php foreach ($users as $index => $user) {?>
         <tr>
             <td><?php echo $user->fullName; ?></td>
             <td><?php echo $user->login; ?></td>
             <td><?php echo $user->email; ?></td>
             <td><?php echo $user->password; ?></td>
+            <?php $hour = date('Y-m-d 09:00:00');
+                if(  $userArrivedTimes[$index] == NULL) { ?>
+                <td><?php echo $userArrivedTimes[$index]; ?></td>
+            <?php } else if($userArrivedTimes[$index] < $hour) {?>
+                <td style="background-color: lightgreen"><?php echo $userArrivedTimes[$index]; ?></td>
+            <?php } else {?>
+                <td style="background-color: #FF6666"><?php echo $userArrivedTimes[$index]; ?></td>
+            <?php } ?>
             <td><a href="/admin/useredit/<?php echo $user->id; ?>">Edit</a></td>
             <td><a href="/admin/userdelete/<?php echo $user->id; ?>">Delete</a></td>
         </tr>

@@ -1,4 +1,11 @@
 <html>
+<style>
+    table, th, td {
+        margin: 30px;
+        border:1px solid black;
+        padding: 5px;
+    }
+</style>
     <body>
     <h4>Welcome to Time Tracking, <?php echo $this->session->get('AUTH_NAME')?></h4>
 
@@ -8,94 +15,110 @@
         <input type="button" value="Logout" />
     </a>
 
-    <p><a href="#">Change password</a></p>
+    <p><a href="/changepassword">Change password</a></p>
 
     <input style="display: none" id="user_id" value="<?php echo $this->session->get('AUTH_ID')?>">
 
-<!--    <button id="start">-->
-<!--        Start-->
-<!--    </button>-->
-<!--    <button id="stop">-->
-<!--        Stop-->
-<!--    </button>-->
+    <table style="border:solid 1px ">
+        <tr style="border: solid 1px">
+            <th>Today</th>
+            <th>Start/Stop</th>
+            <th>Staff</th>
+        </tr>
+        <tr>
+            <td><?php echo date('d-M-Y', time()) ?></td>
 
-    <?php if($this->session->get('AUTH_STOP_TIME') == NULL && $this->session->get('AUTH_START_TIME') != NULL) {?>
-        <input type="button" id="start" style="display: none" value="Start" />
-        <input type="button" id="stop" value="Stop" />
-    <?php } else {?>
-        <input type="button" id="start" value="Start" />
-        <input type="button" id="stop" style="display: none" value="Stop" />
-    <?php }?>
+            <td>
+                <div style="display: flex">
+                    <div id="staff_hours"><?php foreach ($data['staffHours'] as $index => $staffHours) {
+                            echo '<div class="staff_hours_child_' . $index . '">';
+                            echo '<div class="start_' . $index.'">';
+                            echo $staffHours['start_time'];
+                            echo '-</div>'; echo '<div class="stop_' . $index . '">' . $staffHours['stop_time']   ?? "";
+                            echo '</div>';
+                            echo '</div><br>';
+                        } ?>
+                    </div>
+                    <div>
+                        <button id="start_stop" value="start">Start</button>
+                    </div>
+                </div>
 
-    <p id="start_time" >Start time: <?php echo $this->session->get('AUTH_START_TIME')?></p>
-    <p id="stop_time">Stop time: <?php echo $this->session->get('AUTH_STOP_TIME')?></p>
+            </td>
+            <td>
+                staff hours
+            </td>
+        </tr>
+
+    </table>
+
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
         <script>
 
-        var startT = '<?php echo $this->session->get('AUTH_START_TIME')?>';
-        $('#start').click(function () {
-            let userId = $('input[id="user_id"]').val();
+            $('#start_stop').click(function () {
+                let buttonValue = $('#start_stop').val();
+                if (buttonValue === 'start') {
+                    $('#start_stop').val('stop')
+                    $('#start_stop').html('Stop')
 
-            var request = new XMLHttpRequest();
-            request.open("POST", '/start', true);
+                    startClicked()
+                } else {
+                    $('#start_stop').val('start')
+                    $('#start_stop').html('Start')
 
-            request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
-
-            request.onreadystatechange = function() { // Call a function when the state changes.
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    // Request finished. Do processing here.
-                    var response = JSON.parse(request.response)
-                    if(response.success) {
-                        $("#start_time").html("Start time: " + response.start_time);
-                        $("#stop_time").html("Stop time: ");
-                        startT = response.start_time;
-
-                        $('#start').css({'display':'none'});
-                        $('#stop').css({'display':''});
-
-                        $('#start').click(function(){
-                            $('#start').hide();
-                            $('#stop').show();
-                        });
-                    }
-                    // console.log(response)
+                    stopClicked()
                 }
-            }
-            request.send("userId="+userId+"");
-        })
+            })
 
-        $('#stop').click(function () {
-            let userId = $('input[id="user_id"]').val();
-            let start_time = startT;
+            function startClicked() {
 
-            console.log(startT)
+                let userId = $('input[id="user_id"]').val();
 
-            var request = new XMLHttpRequest();
-            request.open("POST", '/stop', true);
+                var request = new XMLHttpRequest();
+                request.open("POST", '/start', true);
 
-            request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+                request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
 
-            request.onreadystatechange = function() {
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    var response = JSON.parse(request.response)
-                    if(response.success) {
-                        $("#start_time").html("Start time: " + response.start_time);
-                        $("#stop_time").html("Stop time: " + response.stop_time);
+                request.onreadystatechange = function() {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 
-                        $('#start').css({'display':''});
-                        $('#stop').css({'display':'none'});
-
-                        $('#stop').click(function(){
-                            $('#start').show();
-                            $('#stop').hide();
-                        });
+                        var response = JSON.parse(request.response)
+                        if(response.success) {
+                            let nextChildCount = $('#staff_hours>div').length + 1
+                            $('#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                                '<div class="start_'+nextChildCount+'">' + response.start_time + '-</div>' +
+                             '<div class="stop_'+nextChildCount+'"></div></div>')
+                        }
                     }
                 }
+                request.send("userId="+userId+"");
             }
 
-            request.send("userId="+userId+"&start_time="+start_time);
-        })
-    </script>
+            function stopClicked() {
+
+                let userId = $('input[id="user_id"]').val();
+                let stopDivIndex = $('#stop').val();
+
+                var request = new XMLHttpRequest();
+                request.open("POST", '/stop', true);
+
+                request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+
+                request.onreadystatechange = function() {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        var response = JSON.parse(request.response)
+                        if(response.success) {
+                            $('.stop_'+stopDivIndex).html(response.stop_time)
+                            let nextChildCount = $('#staff_hours>div').length + 1
+                            $('#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                                '<div class="stop_'+nextChildCount+'">' + response.stop_time + '</div></div><br>')
+                        }
+                    }
+                }
+
+                request.send("userId="+userId);
+            }
+        </script>
     </body>
 </html>

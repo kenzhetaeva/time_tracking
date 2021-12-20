@@ -28,7 +28,7 @@ class TrackingController extends Controller
         return $response;
     }
 
-    public static function stopAction(int $userId, string $start_time) {
+    public static function stopAction(int $userId) {
         $response = [
             'success' => false
         ];
@@ -36,10 +36,11 @@ class TrackingController extends Controller
         if ($userId) {
 
             $lastDate = StaffHours::findFirst([
-                'conditions' => 'start_time = :start_time:',
+                'conditions' => 'user_id = :userId:',
                 'bind' => [
-                    'start_time' => $start_time,
-                ]
+                    'userId' => $userId,
+                ],
+                'order' => 'start_time DESC'
             ]);
 
             $stopTime = new DateTime("now", new DateTimeZone('Asia/Bishkek'));
@@ -50,7 +51,6 @@ class TrackingController extends Controller
             $lastDate->update();
 
             $response['success'] = true;
-            $response['start_time'] = $start_time;
             $response['stop_time'] = $stopTime;
         }
 

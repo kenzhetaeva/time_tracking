@@ -16,6 +16,17 @@ class IndexController extends ControllerBase
 
     public function mainPageAction() {
         $this->authorized();
+        $staffHours = UserController::getUserStaff($this->session->get('AUTH_ID'));
+
+        $data['stopButtonActive'] = false;
+        if (is_null($staffHours[count($staffHours)-1]['stop_time'])) {
+            $data['stopButtonActive'] = true;
+        }
+        $data['staffHours'] = $staffHours;
+
+        $this->view->setVars([
+            'data' => $data
+        ]);
     }
 
     public function startAction()
@@ -35,9 +46,8 @@ class IndexController extends ControllerBase
     {
         if ($this->request->isPost()) {
             $userId = $this->request->getPost('userId');
-            $start_time = $this->request->getPost('start_time');
 
-            $response = TrackingController::stopAction((int)$userId, (string)$start_time);
+            $response = TrackingController::stopAction((int)$userId);
 
             if ($response['success']) {
                 exit(json_encode($response));

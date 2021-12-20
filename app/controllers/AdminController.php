@@ -19,7 +19,16 @@ class AdminController extends ControllerBase
                 'conditions' => 'is_active = 1'
             ]);
 
+            $index = 0;
+            $userArrivedTimes =[];
+            foreach ($users as $user) {
+                $staffHours[] = UserController::getUserStaff($user->id);
+                $userArrivedTimes[] = $staffHours[$index][0][start_time];
+                $index++;
+            }
+
             $this->view->users = $users;
+            $this->view->userArrivedTimes = $userArrivedTimes;
         }
         else if($this->isLoggedIn())
             return $this->response->redirect('/checkadmin');

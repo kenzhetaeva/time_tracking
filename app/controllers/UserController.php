@@ -34,14 +34,16 @@ class UserController extends Controller
                 if(strcmp($password, $user->password) == 0) {
 //                if ($this->security->checkHash($password, $user->password)) {
 
-                    $lastDate = StaffHours::findFirst
-                    ([
-                        'conditions' => 'user_id = :userId:',
-//                         and start_time = :today:',
+                    $today = date('Y-m-d H:i:s', strtotime('0 DAY, 00:00:00'));
+                    $tomorrow = date('Y-m-d H:i:s', strtotime('+1 DAY, 00:00:00'));
+                    $lastDate = StaffHours::find([
+                        'conditions' => 'user_id = :userId:
+                            and start_time > :today: and start_time < :tomorrow:',
                         'order' => "start_time DESC",
                         'bind' => [
                             'userId' => $user->id,
-//                            'today' => DateTime.Today
+                            'today' => $today,
+                            'tomorrow' =>$tomorrow
                         ]
                     ]);
 
@@ -67,8 +69,27 @@ class UserController extends Controller
             $this->view->error = $error;
     }
 
+    public static function getUserStaff($userId)
+    {
+        $today = date('Y-m-d');
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :today:',
+            'bind' => [
+                'userId' => $userId,
+                'today' => "%$today%",
+            ]
+        ])->toArray();
+
+        return $userStaff;
+    }
+
     public function logoutAction() {
         $this->session->destroy();
         return $this->response->redirect('/login');
+    }
+
+    public function changePasswordAction() {
+
     }
 }

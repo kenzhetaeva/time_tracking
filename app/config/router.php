@@ -19,6 +19,11 @@ $router->add("/logout", array(
     "action"     => "logout",
 ));
 
+$router->add("/changepassword", array(
+    "controller" => "user",
+    "action"     => "changepassword",
+));
+
 $router->add("/mainpage", array(
     "controller" => "index",
     "action"     => "mainpage",
