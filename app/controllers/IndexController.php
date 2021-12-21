@@ -16,7 +16,16 @@ class IndexController extends ControllerBase
 
     public function mainPageAction() {
         $this->authorized();
-        $staffHours = UserController::getUserStaff($this->session->get('AUTH_ID'));
+        $month = date('m');
+        $year = date('Y');
+        if ($this->request->get('month')) {
+            $month = $this->request->get('month');
+        }
+        if ($this->request->get('year')) {
+            $year = $this->request->get('year');
+        }
+
+        $staffHours = UserController::getUserStaff($this->session->get('AUTH_ID'), $month, $year);
 
         $data['stopButtonActive'] = false;
         if (is_null($staffHours[count($staffHours)-1]['stop_time'])) {
@@ -25,7 +34,9 @@ class IndexController extends ControllerBase
         $data['staffHours'] = $staffHours;
 
         $this->view->setVars([
-            'data' => $data
+            'data' => $data,
+            'thisMonth' => $month,
+            'thisYear' => $year,
         ]);
     }
 

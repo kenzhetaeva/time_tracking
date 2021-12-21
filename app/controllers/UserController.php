@@ -34,25 +34,10 @@ class UserController extends Controller
                 if(strcmp($password, $user->password) == 0) {
 //                if ($this->security->checkHash($password, $user->password)) {
 
-                    $today = date('Y-m-d H:i:s', strtotime('0 DAY, 00:00:00'));
-                    $tomorrow = date('Y-m-d H:i:s', strtotime('+1 DAY, 00:00:00'));
-                    $lastDate = StaffHours::find([
-                        'conditions' => 'user_id = :userId:
-                            and start_time > :today: and start_time < :tomorrow:',
-                        'order' => "start_time DESC",
-                        'bind' => [
-                            'userId' => $user->id,
-                            'today' => $today,
-                            'tomorrow' =>$tomorrow
-                        ]
-                    ]);
-
                     $this->session->set('AUTH_ID', $user->id);
                     $this->session->set('AUTH_NAME', $user->fullName);
                     $this->session->set('AUTH_LOGIN', $user->login);
                     $this->session->set('AUTH_EMAIL', $user->email);
-                    $this->session->set('AUTH_START_TIME', $lastDate->start_time);
-                    $this->session->set('AUTH_STOP_TIME', $lastDate->stop_time);
 
                     return $this->response->redirect('/mainpage');
                 }
@@ -69,15 +54,15 @@ class UserController extends Controller
             $this->view->error = $error;
     }
 
-    public static function getUserStaff($userId)
+    public static function getUserStaff($userId, $month, $year)
     {
-        $today = date('Y-m-d');
+        $thisMonth = $year.'-'.$month.'-'.date('d');
         $userStaff = StaffHours::find([
             'conditions' => 'user_id = :userId:
-                            and start_time like :today:',
+                            and start_time like :thisMonth:',
             'bind' => [
                 'userId' => $userId,
-                'today' => "%$today%",
+                'thisMonth' => "%$thisMonth%",
             ]
         ])->toArray();
 
