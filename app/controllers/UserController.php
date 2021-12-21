@@ -4,11 +4,6 @@ use \Phalcon\Mvc\Model;
 use Phalcon\Mvc\Controller;
 use Phalcon\Security;
 
-//use Phalcon\Escaper;
-use Phalcon\Flash\Session as FlashSession;
-//use Phalcon\Session\Adapter\Stream;
-//use Phalcon\Session\Manager;
-
 class UserController extends Controller
 {
     /**
@@ -56,7 +51,31 @@ class UserController extends Controller
 
     public static function getUserStaff($userId, $month, $year)
     {
-        $thisMonth = $year.'-'.$month.'-'.date('d');
+
+        $monthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        for($i = 1; $i < $monthDays; $i++) {
+            $thisMonth = $year.'-'.$month.'-'.$i;
+            $userStaff = StaffHours::find([
+                'conditions' => 'user_id = :userId:
+                                and start_time like :thisMonth:',
+                'bind' => [
+                    'userId' => $userId,
+                    'thisMonth' => "%$thisMonth%",
+                ]
+            ])->toArray();
+
+            $difference = 0;
+            foreach ($userStaff as $uStaff) {
+                if($uStaff['stop_time'] != NULL) {
+                    $t1 = strtotime( $uStaff['start_time'] );
+                    $t2 = strtotime( $uStaff['stop_time'] );
+                    $diff = $t2 - $t1;
+                    $difference += $diff;
+                }
+            }
+        }
+
+        $thisMonth = $year.'-'.$month;
         $userStaff = StaffHours::find([
             'conditions' => 'user_id = :userId:
                             and start_time like :thisMonth:',
@@ -66,7 +85,17 @@ class UserController extends Controller
             ]
         ])->toArray();
 
-        return $userStaff;
+        $difference = 0;
+        foreach ($userStaff as $uStaff) {
+            if($uStaff['stop_time'] != NULL) {
+                $t1 = strtotime( $uStaff['start_time'] );
+                $t2 = strtotime( $uStaff['stop_time'] );
+                $diff = $t2 - $t1;
+                $difference += $diff;
+            }
+        }
+
+        return [$userStaff, $difference];
     }
 
     public function logoutAction() {

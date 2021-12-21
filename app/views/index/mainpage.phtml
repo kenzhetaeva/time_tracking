@@ -41,30 +41,48 @@
                 </select>
             </th>
         </tr>
+        <?php
+        $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
+        $isStart = false;
+        for ($i = 1; $i < $monthDays; $i++) { ?>
         <tr>
-            <td><?php echo strftime("%a %d %b", time()) ?></td>
 
-            <td>
-                <div style="display: flex">
-                    <div id="staff_hours"><?php foreach ($data['staffHours'] as $index => $staffHours) {
-                            echo '<div class="staff_hours_child_' . $index . '">';
-                            echo '<div class="start_' . $index.'">';
-                            echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
-                            echo '-</div>'; echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
-                            echo '</div>';
-                            echo '</div><br>';
-                        } ?>
+                <td><?php echo strftime("%a %d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
+                <td>
+                    <div style="display: flex">
+                        <div id="staff_hours">
+                            <?php foreach ($data['staffHours'] as $index => $staffHours) {
+                                if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
+                                    if(strftime("%d %b %Y", strtotime($staffHours['stop_time']))==strftime("%d %b %Y", time())) $isStart = true;
+                                    echo '<div class="staff_hours_child_' . $index . '">';
+                                    echo '<div class="start_' . $index . '">';
+                                    echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
+                                    echo '-</div>';
+                                    echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
+                                    echo '</div>';
+                                    echo '</div><br>';
+                                }
+                            } ?>
+                        </div>
+                        <div>
+                            <?php if($isStart) {?>
+                            <button id="start_stop" value="start">Start</button>
+                            <?php
+                            $isStart = false;
+                            } ?>
+                        </div>
                     </div>
-                    <div>
-                        <button id="start_stop" value="start">Start</button>
-                    </div>
-                </div>
 
-            </td>
-            <td>
-                staff hours
-            </td>
+                </td>
+                <td>
+                    <?php echo gmdate("H:i:s", $interval); ?>
+                </td>
+
+
         </tr>
+            <?php
+        }
+        ?>
 
     </table>
 
@@ -111,7 +129,7 @@
                         if(response.success) {
                             let nextChildCount = $('#staff_hours>div').length + 1
                             $('#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
-                                '<div class="start_'+nextChildCount+'">' + response.start_time + '-</div>' +
+                                '<div class="start_'+nextChildCount+'">' +  response.start_time + '-</div>' +
                              '<div class="stop_'+nextChildCount+'"></div></div>')
                         }
                     }
