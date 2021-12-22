@@ -14,7 +14,6 @@ class AdminController extends ControllerBase
         $userLogin = $this->session->get('AUTH_LOGIN');
 
         if(strcmp($userLogin, 'admin') == 0 ) {
-
             $users = Users::find([
                 'conditions' => 'is_active = 1'
             ]);
@@ -22,7 +21,8 @@ class AdminController extends ControllerBase
             $index = 0;
             $userArrivedTimes =[];
             foreach ($users as $user) {
-                $staffHours[] = UserController::getUserStaff($user->id);
+                $staffHours[] = UserController::getTodayUserStaff($user->id);
+//                print_die($staffHours);
                 $userArrivedTimes[] = $staffHours[$index][0][start_time];
                 $index++;
             }

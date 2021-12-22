@@ -41,19 +41,21 @@
                 </select>
             </th>
         </tr>
+
+        <button id="hide">Hide</button>
+        <button id="show">Show</button>
         <?php
         $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
         $isStart = false;
-        for ($i = 1; $i < $monthDays; $i++) { ?>
+        for ($i = 1; $i <= $monthDays; $i++) { ?>
         <tr>
-
-                <td><?php echo strftime("%a %d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
+            <td><?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
                 <td>
                     <div style="display: flex">
                         <div id="staff_hours">
                             <?php foreach ($data['staffHours'] as $index => $staffHours) {
+                                if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) $isStart = true;
                                 if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
-                                    if(strftime("%d %b %Y", strtotime($staffHours['stop_time']))==strftime("%d %b %Y", time())) $isStart = true;
                                     echo '<div class="staff_hours_child_' . $index . '">';
                                     echo '<div class="start_' . $index . '">';
                                     echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
@@ -66,19 +68,16 @@
                         </div>
                         <div>
                             <?php if($isStart) {?>
-                            <button id="start_stop" value="start">Start</button>
-                            <?php
-                            $isStart = false;
+                                <button id="start_stop" value="start">Start</button>
+                                <?php
+                                $isStart = false;
                             } ?>
                         </div>
                     </div>
-
                 </td>
                 <td>
-                    <?php echo gmdate("H:i:s", $interval); ?>
+                    <?php echo gmdate("H:i:s", $intervals[$i-1]); ?>
                 </td>
-
-
         </tr>
             <?php
         }
@@ -97,6 +96,13 @@
                 console.log('/mainpage?month='+$('#months').val()+'&year=2021');
                 window.location.href = '/mainpage?month='+$('#months').val()+'&year=2021';
             });
+
+            $('#hide').click(function () {
+                $('tr').hide();
+            })
+            $('#show').click(function () {
+                $('tr').show();
+            })
 
             $('#start_stop').click(function () {
                 let buttonValue = $('#start_stop').val();

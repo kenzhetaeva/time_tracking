@@ -28,7 +28,7 @@ class IndexController extends ControllerBase
         $array = UserController::getUserStaff($this->session->get('AUTH_ID'), $month, $year);
 
         $staffHours = $array[0];
-        $interval = $array[1];
+        $intervals = $array[1];
 
         $data['stopButtonActive'] = false;
         if (is_null($staffHours[count($staffHours)-1]['stop_time'])) {
@@ -38,7 +38,7 @@ class IndexController extends ControllerBase
 
         $this->view->setVars([
             'data' => $data,
-            'interval' => $interval,
+            'intervals' => $intervals,
             'thisMonth' => $month,
             'thisYear' => $year,
         ]);

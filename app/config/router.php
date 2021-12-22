@@ -24,6 +24,11 @@ $router->add("/changepassword", array(
     "action"     => "changepassword",
 ));
 
+$router->add("/user/changepassword", array(
+    "controller" => "user",
+    "action"     => "changeuserpassword",
+));
+
 $router->add("/mainpage", array(
     "controller" => "index",
     "action"     => "mainpage",

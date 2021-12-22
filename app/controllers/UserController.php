@@ -51,9 +51,9 @@ class UserController extends Controller
 
     public static function getUserStaff($userId, $month, $year)
     {
-
+        $intervals = [];
         $monthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        for($i = 1; $i < $monthDays; $i++) {
+        for($i = 1; $i <= $monthDays; $i++) {
             $thisMonth = $year.'-'.$month.'-'.$i;
             $userStaff = StaffHours::find([
                 'conditions' => 'user_id = :userId:
@@ -64,15 +64,18 @@ class UserController extends Controller
                 ]
             ])->toArray();
 
-            $difference = 0;
+//            print_die($userStaff);
+
+            $interval = 0;
             foreach ($userStaff as $uStaff) {
                 if($uStaff['stop_time'] != NULL) {
                     $t1 = strtotime( $uStaff['start_time'] );
                     $t2 = strtotime( $uStaff['stop_time'] );
                     $diff = $t2 - $t1;
-                    $difference += $diff;
+                    $interval += $diff;
                 }
             }
+            $intervals[] = $interval;
         }
 
         $thisMonth = $year.'-'.$month;
@@ -95,7 +98,25 @@ class UserController extends Controller
             }
         }
 
-        return [$userStaff, $difference];
+//        print_die($intervals);
+        return [$userStaff, $intervals];
+    }
+
+    public static function getTodayUserStaff($userId)
+    {
+        $today = date('Y-m-d');
+//        print_die($today);
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :today:',
+            'bind' => [
+                'userId' => $userId,
+                'today' => "%$today%",
+            ]
+        ])->toArray();
+
+
+        return $userStaff;
     }
 
     public function logoutAction() {
@@ -105,5 +126,24 @@ class UserController extends Controller
 
     public function changePasswordAction() {
 
+    }
+
+    public function changeUserPasswordAction() {
+        if($this->request->isPost()) {
+            $userId = $this->request->getPost('id');
+            $password1 = $this->request->getPost('password1');
+            $password2 = $this->request->getPost('password2');
+
+            if($password1 != $password2) return $this->response->redirect('/changepassword');
+
+            $user = Users::findFirst($userId);
+
+            if($user) {
+                $user->password = $password1;
+
+                $user->update();
+                return $this->response->redirect('/mainpage');
+            }
+        }
     }
 }
