@@ -15,17 +15,20 @@
             <th>Email</th>
             <th>Password</th>
             <th>Arrived Time for today</th>
-<!--            <th>Arrived Time for --><?php //echo strftime("%d %b, %Y", $userArrivedTimes[3]); ?><!--</th>-->
             <th></th>
             <th></th>
         </tr>
-        <?php foreach ($users as $index => $user) {?>
+        <?php
+        $workhour_start = $users[0]->workhour_start;
+        foreach ($users as $index => $user) {?>
         <tr>
             <td><a href="/admin/staffmonth/<?php echo $user->id; ?>"><?php echo $user->fullName; ?></a></td>
             <td><?php echo $user->login; ?></td>
             <td><?php echo $user->email; ?></td>
             <td><?php echo $user->password; ?></td>
-            <?php $hour = date('Y-m-d 09:00:00');
+            <?php
+            $workhour = strftime("%H:%M:%S", strtotime($workhour_start));
+            $hour = date('Y-m-d '.$workhour);
                 if($userArrivedTimes[$index] == NULL) { ?>
                 <td><?php echo strftime("%H:%M:%S", strtotime($userArrivedTimes[$index])); ?></td>
             <?php } else if($userArrivedTimes[$index] < $hour) {?>

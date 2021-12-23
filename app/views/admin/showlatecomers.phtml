@@ -6,8 +6,11 @@
     }
 </style>
 <body>
-    <a href="/admin">Go back to Admin Panel</a>
     <h4>List of Late Comers</h4>
+    <p><a href="/admin">Go back to Admin Panel</a></p>
+    <p><a href="/admin/changeworkhour">Change Begining of working day</a></p>
+
+    <p style="font-weight: bold">Begining of working day: <?php echo strftime("%H:%M", strtotime($users[0]->workhour_start)) ?></p>
     <table>
         <tr>
             <th>Name Surname</th>
@@ -15,20 +18,22 @@
             <th>Arrived Time</th>
         </tr>
         <?php
-        if(count($users) != 0)
-        for ($user_i = 0; $user_i < count($users); $user_i++) {
-            if(count($userArrivedTimes[$user_i]) != 0)
-            for ($sh_i = 0; $sh_i < count($userArrivedTimes[$user_i]); $sh_i++) {
-                $hour = date('09:00:00');
-                $arrivedTime = strftime("%H:%M:%S", strtotime($userArrivedTimes[$user_i][$sh_i]['start_time']));
-                if($arrivedTime > $hour and $userArrivedTimes[$user_i][$sh_i]['start_time'] != NULL) {
-                ?>
-                <tr>
-                    <td><a href="/admin/staffmonth/<?php echo $users[$user_i]->id; ?>"><?php echo $users[$user_i]->fullName; ?></a></td>
-                    <td><?php echo $users[$user_i]->login; ?></td>
-                    <td style="background-color: #FF6666"><?php echo $userArrivedTimes[$user_i][$sh_i]['start_time'] ?></td>
-                </tr>
-            <?php
+        if(count($users) != 0) {
+            $workhour_start = $users[0]->workhour_start;
+            for ($user_i = 0; $user_i < count($users); $user_i++) {
+                if(count($userArrivedTimes[$user_i]) != 0)
+                for ($sh_i = 0; $sh_i < count($userArrivedTimes[$user_i]); $sh_i++) {
+                    $hour = strftime("%H:%M:%S", strtotime($workhour_start));
+                    $arrivedTime = strftime("%H:%M:%S", strtotime($userArrivedTimes[$user_i][$sh_i]['start_time']));
+                    if($arrivedTime > $hour and $userArrivedTimes[$user_i][$sh_i]['start_time'] != NULL) {
+                    ?>
+                    <tr>
+                        <td><a href="/admin/staffmonth/<?php echo $users[$user_i]->id; ?>"><?php echo $users[$user_i]->fullName; ?></a></td>
+                        <td><?php echo $users[$user_i]->login; ?></td>
+                        <td><?php echo $userArrivedTimes[$user_i][$sh_i]['start_time'] ?></td>
+                    </tr>
+                <?php
+                    }
                 }
             }
         }?>

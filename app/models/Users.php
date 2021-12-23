@@ -43,6 +43,12 @@ class Users extends \Phalcon\Mvc\Model
     public $is_active;
 
     /**
+     *
+     * @var string
+     */
+    public $workhour_start;
+
+    /**
      * Validations and business logic
      *
      * @return boolean
@@ -75,6 +81,8 @@ class Users extends \Phalcon\Mvc\Model
 
     public function onConstruct()
     {
+        $this->workhour_start = new DateTime("now", new DateTimeZone('Asia/Bishkek'));
+        $this->workhour_start = $this->workhour_start->format('2000-01-01 09:00:00');
         $this->is_active = true;
     }
 

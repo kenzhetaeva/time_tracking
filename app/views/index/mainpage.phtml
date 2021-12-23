@@ -43,8 +43,8 @@
             </th>
         </tr>
 
-        <button id="hide">Hide</button>
-        <button id="show">Show</button>
+<!--        <button id="hide">Hide</button>-->
+<!--        <button id="show">Show</button>-->
         <?php
         $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
         $isStart = false;
@@ -98,12 +98,12 @@
                 window.location.href = '/mainpage?month='+$('#months').val()+'&year=2021';
             });
 
-            $('#hide').click(function () {
-                $('tr').hide();
-            })
-            $('#show').click(function () {
-                $('tr').show();
-            })
+            // $('#hide').click(function () {
+            //     $('tr').hide();
+            // })
+            // $('#show').click(function () {
+            //     $('tr').show();
+            // })
 
             $('#start_stop').click(function () {
                 let buttonValue = $('#start_stop').val();

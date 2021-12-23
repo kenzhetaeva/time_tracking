@@ -68,6 +68,34 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    public function changeWorkHourAction() {
+        $user = Users::findFirst();
+        $workhour_start = $user->workhour_start;
+
+        $this->view->setVars([
+            'workhour_start' => $workhour_start
+        ]);
+    }
+
+    public function editWorkHourAction() {
+        if($this->request->isPost()) {
+            $workhour_start = $this->request->getPost('workhour_start');
+
+            $users = Users::find();
+
+            if($users) {
+                $hour = date('2000-01-01 '.$workhour_start);
+
+                foreach ($users as $user) {
+                    $user->workhour_start = $hour;
+
+                    $user->update();
+                }
+                return $this->response->redirect('/admin/showlatecomers');
+            }
+        }
+    }
+
     public function showLateComersAction() {
 
         $users = Users::find([
@@ -89,11 +117,9 @@ class AdminController extends ControllerBase
                 ->getQuery()
                 ->execute()
                 ->toArray();
-//            print_die($staffHours);
             $userArrivedTimes[] = $staffHours;
             $index++;
         }
-//        print_die($userArrivedTimes);
 
         $this->view->setVars([
             'users' => $users,
