@@ -68,6 +68,32 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    public function addHolidaysAction() {
+    }
+
+    public function editHolidaysAction() {
+        if($this->request->isPost()) {
+            $holiday = $this->request->getPost('holiday');
+            $isRepeated = $this->request->getPost('isRepeated');
+            $day = date($holiday.' 00:00:00');
+
+            $year = date('Y', strtotime($day));
+
+            if($isRepeated == 'on') {
+                for($i = 0; $i < 10; $i++) {
+                    $futureDate=date('Y-m-d H:i:s', strtotime('+'.$i.' year', strtotime($day)) );
+
+                    $new_holiday = new Holidays();
+                    $new_holiday->holiday_day = $futureDate;
+
+                    $new_holiday->save();
+                }
+            }
+
+            return $this->response->redirect('/admin');
+        }
+    }
+
     public function changeWorkHourAction() {
         $user = Users::findFirst();
         $workhour_start = $user->workhour_start;
@@ -162,9 +188,6 @@ class AdminController extends ControllerBase
         if ($this->request->isPost()) {
 
             $id = $this->request->getPost('id');
-
-//            var_dump($id);
-//            die();
 
             $user = Users::findFirst($id);
 

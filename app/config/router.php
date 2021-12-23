@@ -58,6 +58,16 @@ $router->add("/admin/changestaffhours/[:id]/[:day]/[:month]/[:year]", array(
     ]
 ));
 
+$router->add('/admin/addholidays', [
+    "controller" => "admin",
+    "action"     => "addholidays",
+]);
+
+$router->add('/admin/editholidays', [
+    "controller" => "admin",
+    "action"     => "editholidays",
+]);
+
 $router->add('/admin/changeworkhour', [
     "controller" => "admin",
     "action"     => "changeworkhour",

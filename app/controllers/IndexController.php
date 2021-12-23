@@ -27,6 +27,12 @@ class IndexController extends ControllerBase
 
         $array = UserController::getUserStaff($this->session->get('AUTH_ID'), $month, $year);
 
+        $holidays = Holidays::find();
+        $holiday_days = [];
+        foreach ($holidays as $holiday) {
+            $holiday_days[] = strtotime($holiday->holiday_day);
+        }
+
         $staffHours = $array[0];
         $intervals = $array[1];
 
@@ -38,6 +44,7 @@ class IndexController extends ControllerBase
 
         $this->view->setVars([
             'data' => $data,
+            'holidays' => $holiday_days,
             'intervals' => $intervals,
             'thisMonth' => $month,
             'thisYear' => $year,

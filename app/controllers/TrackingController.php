@@ -22,7 +22,7 @@ class TrackingController extends Controller
             $s_hour->save();
 
             $response['success'] = true;
-            $response['start_time'] = $startTime;
+            $response['start_time'] = strftime("%H:%M:%S", strtotime($startTime));
         }
 
         return $response;
@@ -51,7 +51,7 @@ class TrackingController extends Controller
             $lastDate->update();
 
             $response['success'] = true;
-            $response['stop_time'] = $stopTime;
+            $response['stop_time'] = strftime("%H:%M:%S", strtotime($stopTime));
         }
 
         return $response;

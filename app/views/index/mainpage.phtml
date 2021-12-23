@@ -50,9 +50,26 @@
         $isStart = false;
         for ($i = 1; $i <= $monthDays; $i++) { ?>
         <tr>
-            <td><?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
+            <td>
+                <?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear));
+                $day = strtotime($thisYear.'-'.$thisMonth.'-'.$i);
+                $dayofweek = date('w', $day);
+                $holiday_day = strtotime($thisYear.'-'.$thisMonth.'-'.$i.' 00:00:00');
+                if($dayofweek == 0 || $dayofweek == 6 || in_array($holiday_day, $holidays)) {?>
+                    <input type="checkbox" disabled >
+                <?php }
+                else {?>
+                    <input type="checkbox" checked disabled>
+                <?php } ?>
+            </td>
                 <td>
-                    <div style="display: flex">
+                    <div
+                        <?php
+                        if (strftime("%d %b %Y", strtotime($i . '-' . $thisMonth . '-' . $thisYear)) == strftime("%d %b %Y", time())) {
+                            echo "id = 'test'";
+                        }
+                        ?>
+                        >
                         <div id="staff_hours">
                             <?php foreach ($data['staffHours'] as $index => $staffHours) {
                                 if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) $isStart = true;
@@ -135,7 +152,7 @@
                         var response = JSON.parse(request.response)
                         if(response.success) {
                             let nextChildCount = $('#staff_hours>div').length + 1
-                            $('#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                            $('#test>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
                                 '<div class="start_'+nextChildCount+'">' +  response.start_time + '-</div>' +
                              '<div class="stop_'+nextChildCount+'"></div></div>')
                         }
@@ -160,7 +177,7 @@
                         if(response.success) {
                             $('.stop_'+stopDivIndex).html(response.stop_time)
                             let nextChildCount = $('#staff_hours>div').length + 1
-                            $('#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                            $('#test>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
                                 '<div class="stop_'+nextChildCount+'">' + response.stop_time + '</div></div><br>')
                         }
                     }
