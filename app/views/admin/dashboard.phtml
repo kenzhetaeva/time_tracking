@@ -14,23 +14,24 @@
             <th>Login</th>
             <th>Email</th>
             <th>Password</th>
-            <th>Arrived Time</th>
+            <th>Arrived Time for today</th>
+<!--            <th>Arrived Time for --><?php //echo strftime("%d %b, %Y", $userArrivedTimes[3]); ?><!--</th>-->
             <th></th>
             <th></th>
         </tr>
         <?php foreach ($users as $index => $user) {?>
         <tr>
-            <td><?php echo $user->fullName; ?></td>
+            <td><a href="/admin/staffmonth/<?php echo $user->id; ?>"><?php echo $user->fullName; ?></a></td>
             <td><?php echo $user->login; ?></td>
             <td><?php echo $user->email; ?></td>
             <td><?php echo $user->password; ?></td>
             <?php $hour = date('Y-m-d 09:00:00');
-                if(  $userArrivedTimes[$index] == NULL) { ?>
-                <td><?php echo $userArrivedTimes[$index]; ?></td>
+                if($userArrivedTimes[$index] == NULL) { ?>
+                <td><?php echo strftime("%H:%M:%S", strtotime($userArrivedTimes[$index])); ?></td>
             <?php } else if($userArrivedTimes[$index] < $hour) {?>
-                <td style="background-color: lightgreen"><?php echo $userArrivedTimes[$index]; ?></td>
+                <td style="background-color: lightgreen"><?php echo strftime("%H:%M:%S", strtotime($userArrivedTimes[$index])); ?></td>
             <?php } else {?>
-                <td style="background-color: #FF6666"><?php echo $userArrivedTimes[$index]; ?></td>
+                <td style="background-color: #FF6666"><?php echo strftime("%H:%M:%S", strtotime($userArrivedTimes[$index])); ?></td>
             <?php } ?>
             <td><a href="/admin/useredit/<?php echo $user->id; ?>">Edit</a></td>
             <td><a href="/admin/userdelete/<?php echo $user->id; ?>">Delete</a></td>
@@ -38,6 +39,7 @@
         <?php } ?>
     </table>
 
+    <p><a href="/admin/showlatecomers/">Show list of late comers</a></p>
     <p><a href="/admin/useradd/">Add new user</a></p>
     <p><a href="/mainpage">Go to Profile Page</a></p>
 </body>

@@ -39,9 +39,38 @@ $router->add("/admin", array(
     "action"     => "dashboard",
 ));
 
+$router->add("/admin/staffmonth/[:id]", array(
+    "controller" => "admin",
+    "action"     => "staffmonth",
+    "constraint" => [
+        'id' => '[0-9]'
+    ]
+));
+
+$router->add("/admin/changestaffhours/[:id]/[:day]/[:month]/[:year]", array(
+    "controller" => "admin",
+    "action"     => "changestaffhours",
+    "constraint" => [
+        'id' => '[0-9]',
+        'day' => '[0-9]',
+        'month' => '[0-9]',
+        'year' => '[0-9]'
+    ]
+));
+
+$router->add("/admin/staffhoursedit", [
+    "controller" => "admin",
+    "action" => "staffhoursedit"
+]);
+
 $router->add("/checkadmin", array(
     "controller" => "index",
     "action"     => "checkadmin",
+));
+
+$router->add("/admin/showlatecomers", array(
+    "controller" => "admin",
+    "action"     => "showlatecomers",
 ));
 
 $router->add("/admin/userdelete/[:id]", array(

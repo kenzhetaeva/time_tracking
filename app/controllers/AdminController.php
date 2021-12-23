@@ -22,7 +22,6 @@ class AdminController extends ControllerBase
             $userArrivedTimes =[];
             foreach ($users as $user) {
                 $staffHours[] = UserController::getTodayUserStaff($user->id);
-//                print_die($staffHours);
                 $userArrivedTimes[] = $staffHours[$index][0][start_time];
                 $index++;
             }
@@ -32,6 +31,80 @@ class AdminController extends ControllerBase
         }
         else if($this->isLoggedIn())
             return $this->response->redirect('/checkadmin');
+    }
+
+    public function staffMonthAction($id) {
+        $month = date('m');
+        $year = date('Y');
+
+        $user = Users::findFirst($id);
+        $array = UserController::getUserStaff($id, $month, $year);
+
+        $staffHours = $array[0];
+        $intervals = $array[1];
+        $data['staffHours'] = $staffHours;
+
+//        print_die($staffHours);
+        $this->view->setVars([
+            'user' => $user,
+            'data' => $data,
+            'intervals' => $intervals,
+            'thisMonth' => $month,
+            'thisYear' => $year,
+        ]);
+    }
+
+    public function changeStaffHoursAction($id, $day, $month, $year) {
+        $staffHours = UserController::getOneDayUserStaff($id, $day, $month, $year);
+        $user = Users::findFirst($id);
+
+        $data['staffHours'] = $staffHours;
+        $this->view->setVars([
+            'data' =>$data,
+            'user' => $user,
+            'day' => $day,
+            'month' => $month,
+            'year' => $year
+        ]);
+    }
+
+    public function showLateComersAction() {
+
+        $users = Users::find([
+            'conditions' => 'is_active = 1'
+        ]);
+
+        $index = 0;
+        $userArrivedTimes = [];
+        $allStarts = [];
+
+        foreach ($users as $user) {
+            $query = new StaffHours;
+            $staffHours = $query->getModelsManager()->createBuilder()
+                ->columns(['*'])
+                ->from(['staff1' => StaffHours::class])
+                ->where('staff1.id = (select min(staff2.id) from StaffHours as staff2 where staff2.user_id = '.$user->id.' AND
+                 DATE(staff2.start_time) = DATE(staff1.start_time) group by staff2.user_id)')
+                ->andWhere('staff1.user_id = '.$user->id)
+                ->getQuery()
+                ->execute()
+                ->toArray();
+//            print_die($staffHours);
+            $userArrivedTimes[] = $staffHours;
+            $index++;
+        }
+//        print_die($userArrivedTimes);
+
+        $this->view->setVars([
+            'users' => $users,
+            'userArrivedTimes' => $userArrivedTimes
+        ]);
+    }
+
+    public function staffHoursEditAction() {
+        if($this->request->isPost()) {
+            $id = $this->request->getPost();
+        }
     }
 
     public function userDeleteAction($id) {

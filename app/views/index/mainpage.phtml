@@ -1,5 +1,4 @@
 <html>
-<?php use Phalcon\Tag; ?>
 <style>
     table, th, td {
         margin: 30px;
@@ -10,7 +9,9 @@
     <body>
     <h4>Welcome to Time Tracking, <?php echo $this->session->get('AUTH_NAME')?></h4>
 
-    <p><a href="/admin">Go to Admin Panel</a></p>
+    <?php if(strcmp($this->session->get('AUTH_LOGIN'), 'admin') == 0) {?>
+        <p><a href="/admin">Go to Admin Panel</a></p>
+    <?php } ?>
 
     <a href="/logout">
         <input type="button" value="Logout" />

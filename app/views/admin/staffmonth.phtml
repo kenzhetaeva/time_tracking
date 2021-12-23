@@ -1,0 +1,79 @@
+<html>
+<style>
+    table, th, td {
+        margin: 30px;
+        border:1px solid black;
+        padding: 5px;
+    }
+</style>
+<body>
+<?php //print_die($user); ?>
+<h3>Welcome to <?php echo $user->fullName?>'s Time Tracking</h3>
+
+<a href="/admin">Go back to Admin Panel</a>
+
+<table>
+    <tr>
+        <th>Today</th>
+        <th>Start/Stop</th>
+        <th> Staff
+            <select name="months" id="selMonth">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </th>
+        <th></th>
+    </tr>
+    <?php
+    $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
+    for ($i = 1; $i <= $monthDays; $i++) { ?>
+        <tr>
+            <td><?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
+            <td>
+                <div style="display: flex">
+                    <div id="staff_hours">
+                        <?php foreach ($data['staffHours'] as $index => $staffHours) {
+                            if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
+                                echo '<div class="staff_hours_child_' . $index . '"><div class="start_' . $index . '">';
+                                echo strftime("%H:%M:%S", strtotime($staffHours['start_time'])).'-</div>';
+                                echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
+                                echo '</div>';
+                                echo '</div><br>';
+                            }
+                        } ?>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <?php echo gmdate("H:i:s", $intervals[$i-1]); ?>
+            </td>
+            <td><a href="/admin/changestaffhours/<?php echo $user->id?>/<?php echo $i?>/<?php echo $thisMonth?>/<?php echo $thisYear?>">Edit</a></td>
+        </tr>
+        <?php
+    }
+    ?>
+
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    let choosedMonth = '<?php echo $thisMonth ?>';
+    $('#selMonth').val("" + choosedMonth).change()
+
+    $('select').on('change', function() {
+        console.log('/mainpage?month='+$('#selMonth').val()+'&year=2021');
+        window.location.href = '/mainpage?month='+$('#selMonth').val()+'&year=2021';
+    });
+</script>
+</body>
+</html>

@@ -54,17 +54,15 @@ class UserController extends Controller
         $intervals = [];
         $monthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         for($i = 1; $i <= $monthDays; $i++) {
-            $thisMonth = $year.'-'.$month.'-'.$i;
+            $day = $year.'-'.$month.'-'.$i;
             $userStaff = StaffHours::find([
                 'conditions' => 'user_id = :userId:
-                                and start_time like :thisMonth:',
+                                and DATE(start_time) = :day:',
                 'bind' => [
                     'userId' => $userId,
-                    'thisMonth' => "%$thisMonth%",
+                    'day' => $day,
                 ]
             ])->toArray();
-
-//            print_die($userStaff);
 
             $interval = 0;
             foreach ($userStaff as $uStaff) {
@@ -98,20 +96,34 @@ class UserController extends Controller
             }
         }
 
-//        print_die($intervals);
         return [$userStaff, $intervals];
     }
 
     public static function getTodayUserStaff($userId)
     {
         $today = date('Y-m-d');
-//        print_die($today);
         $userStaff = StaffHours::find([
             'conditions' => 'user_id = :userId:
                             and start_time like :today:',
             'bind' => [
                 'userId' => $userId,
                 'today' => "%$today%",
+            ]
+        ])->toArray();
+
+
+        return $userStaff;
+    }
+
+    public static function getOneDayUserStaff($userId, $day, $month, $year)
+    {
+        $thisDay = date($year.'-'.$month.'-'.$day);
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :day:',
+            'bind' => [
+                'userId' => $userId,
+                'day' => "%$thisDay%",
             ]
         ])->toArray();
 
