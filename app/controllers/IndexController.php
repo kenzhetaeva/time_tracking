@@ -77,8 +77,11 @@ class IndexController extends ControllerBase
     {
         if ($this->request->isPost()) {
             $userId = $this->request->getPost('userId');
+            $day = $this->request->getPost('day');
+            $month = $this->request->getPost('month');
+            $year = $this->request->getPost('year');
 
-            $response = TrackingController::stopAction((int)$userId);
+            $response = TrackingController::stopAction((int)$userId, $day, $month, $year);
 
             if ($response['success']) {
                 exit(json_encode($response));

@@ -74,16 +74,24 @@
                         >
                         <div id="staff_hours">
                             <?php
-                            if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) $isStart = true;
+                            if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) {
+                                $isStart = true;?>
+                                <input style="display: none" id="today" value="<?php echo $i?>">
+                                <input style="display: none" id="month" value="<?php echo $thisMonth?>">
+                                <input style="display: none" id="year" value="<?php echo $thisYear?>">
+                            <?php
+                            }
                             foreach ($data['staffHours'] as $index => $staffHours) {
                                 if(strftime("%d %b %Y", strtotime($staffHours['start_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
                                     echo '<div class="staff_hours_child_' . $index . '">';
                                     echo '<div class="start_' . $index . '">';
                                     echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
                                     echo '-</div>';
-                                    echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
-                                    echo '</div>';
-                                    echo '</div><br>';
+//                                    if(!$data['stopButtonActive']) {
+                                        echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
+                                        echo '</div>';
+                                        echo '</div><br>';
+//                                    }
                                 }
                             } ?>
                         </div>
@@ -101,7 +109,15 @@
                     </div>
                 </td>
                 <td>
+                    <div
+                        <?php
+                        if (strftime("%d %b %Y", strtotime($i . '-' . $thisMonth . '-' . $thisYear)) == strftime("%d %b %Y", time())) {
+                            echo "id = 'today_int'";
+                        }
+                        ?>
+                    >
                     <?php echo gmdate("H:i:s", $intervals[$i-1]); ?>
+                    </div>
                 </td>
         </tr>
             <?php
@@ -171,6 +187,9 @@
             function stopClicked() {
 
                 let userId = $('input[id="user_id"]').val();
+                let day = $('input[id="today"]').val();
+                let month = $('input[id="month"]').val();
+                let year = $('input[id="year"]').val();
                 let stopDivIndex = $('#stop').val();
 
                 var request = new XMLHttpRequest();
@@ -182,6 +201,7 @@
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                         var response = JSON.parse(request.response)
                         if(response.success) {
+                            $('#today_int').html(response.interval)
                             $('.stop_'+stopDivIndex).html(response.stop_time)
                             let nextChildCount = $('#staff_hours>div').length + 1
                             $('#today>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
@@ -190,7 +210,7 @@
                     }
                 }
 
-                request.send("userId="+userId);
+                request.send("userId="+userId+"&day="+day+"&month="+month+"&year="+year);
             }
         </script>
     </body>

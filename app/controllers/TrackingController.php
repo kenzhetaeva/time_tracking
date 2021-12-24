@@ -28,7 +28,7 @@ class TrackingController extends Controller
         return $response;
     }
 
-    public static function stopAction(int $userId) {
+    public static function stopAction(int $userId, $day, $month, $year) {
         $response = [
             'success' => false
         ];
@@ -50,7 +50,11 @@ class TrackingController extends Controller
 
             $lastDate->update();
 
+            $array = Users::getUserStaff($userId, $month, $year);
+            $intervals = $array[1];
+
             $response['success'] = true;
+            $response['interval'] = gmdate("H:i:s", $intervals[$day - 1]);
             $response['stop_time'] = strftime("%H:%M:%S", strtotime($stopTime));
         }
 

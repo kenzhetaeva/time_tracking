@@ -145,16 +145,6 @@ class Users extends \Phalcon\Mvc\Model
             ]
         ])->toArray();
 
-        $difference = 0;
-        foreach ($userStaff as $uStaff) {
-            if($uStaff['stop_time'] != NULL) {
-                $t1 = strtotime( $uStaff['start_time'] );
-                $t2 = strtotime( $uStaff['stop_time'] );
-                $diff = $t2 - $t1;
-                $difference += $diff;
-            }
-        }
-
         return [$userStaff, $intervals];
     }
 
