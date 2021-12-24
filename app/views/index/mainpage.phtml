@@ -19,6 +19,8 @@
 
     <p><a href="/changepassword">Change password</a></p>
 
+    <h5>В этом месяце, ты отработал <?php echo $doneMonthStaff ?> часов из необходимых <?php echo $monthStaffHours ?> часов</h5>
+
     <input style="display: none" id="user_id" value="<?php echo $this->session->get('AUTH_ID')?>">
 
     <table>
@@ -66,14 +68,15 @@
                     <div
                         <?php
                         if (strftime("%d %b %Y", strtotime($i . '-' . $thisMonth . '-' . $thisYear)) == strftime("%d %b %Y", time())) {
-                            echo "id = 'test'";
+                            echo "id = 'today'";
                         }
                         ?>
                         >
                         <div id="staff_hours">
-                            <?php foreach ($data['staffHours'] as $index => $staffHours) {
-                                if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) $isStart = true;
-                                if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
+                            <?php
+                            if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) $isStart = true;
+                            foreach ($data['staffHours'] as $index => $staffHours) {
+                                if(strftime("%d %b %Y", strtotime($staffHours['start_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
                                     echo '<div class="staff_hours_child_' . $index . '">';
                                     echo '<div class="start_' . $index . '">';
                                     echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
@@ -85,10 +88,14 @@
                             } ?>
                         </div>
                         <div>
-                            <?php if($isStart) {?>
-                                <button id="start_stop" value="start">Start</button>
-                                <?php
-                                $isStart = false;
+                            <?php if($isStart) {
+                                if($data['stopButtonActive']) {?>
+                                    <button id="start_stop" value="stop">Stop</button>
+                                    <?php
+                                } else { ?>
+                                    <button id="start_stop" value="start">Start</button>
+                                <?php }
+                                    $isStart = false;
                             } ?>
                         </div>
                     </div>
@@ -116,7 +123,7 @@
             });
 
             // $('#hide').click(function () {
-            //     $('tr').hide();
+            //     $('tr').not('#today').hide();
             // })
             // $('#show').click(function () {
             //     $('tr').show();
@@ -152,7 +159,7 @@
                         var response = JSON.parse(request.response)
                         if(response.success) {
                             let nextChildCount = $('#staff_hours>div').length + 1
-                            $('#test>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                            $('#today>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
                                 '<div class="start_'+nextChildCount+'">' +  response.start_time + '-</div>' +
                              '<div class="stop_'+nextChildCount+'"></div></div>')
                         }
@@ -177,7 +184,7 @@
                         if(response.success) {
                             $('.stop_'+stopDivIndex).html(response.stop_time)
                             let nextChildCount = $('#staff_hours>div').length + 1
-                            $('#test>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
+                            $('#today>#staff_hours').append('<div class="staff_hours_child_'+nextChildCount+'">' +
                                 '<div class="stop_'+nextChildCount+'">' + response.stop_time + '</div></div><br>')
                         }
                     }

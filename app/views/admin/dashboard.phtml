@@ -13,7 +13,7 @@
             <th>Name Surname</th>
             <th>Login</th>
             <th>Email</th>
-            <th>Password</th>
+<!--            <th>Password</th>-->
             <th>Arrived Time for today</th>
             <th></th>
             <th></th>
@@ -25,7 +25,7 @@
             <td><a href="/admin/staffmonth/<?php echo $user->id; ?>"><?php echo $user->fullName; ?></a></td>
             <td><?php echo $user->login; ?></td>
             <td><?php echo $user->email; ?></td>
-            <td><?php echo $user->password; ?></td>
+<!--            <td>--><?php //echo $user->password; ?><!--</td>-->
             <?php
             $workhour = strftime("%H:%M:%S", strtotime($workhour_start));
             $hour = date('Y-m-d '.$workhour);

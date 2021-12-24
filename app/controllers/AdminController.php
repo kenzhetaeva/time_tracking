@@ -21,7 +21,7 @@ class AdminController extends ControllerBase
             $index = 0;
             $userArrivedTimes =[];
             foreach ($users as $user) {
-                $staffHours[] = UserController::getTodayUserStaff($user->id);
+                $staffHours[] = Users::getTodayUserStaff($user->id);
                 $userArrivedTimes[] = $staffHours[$index][0][start_time];
                 $index++;
             }
@@ -38,7 +38,7 @@ class AdminController extends ControllerBase
         $year = date('Y');
 
         $user = Users::findFirst($id);
-        $array = UserController::getUserStaff($id, $month, $year);
+        $array = Users::getUserStaff($id, $month, $year);
 
         $staffHours = $array[0];
         $intervals = $array[1];
@@ -55,7 +55,7 @@ class AdminController extends ControllerBase
     }
 
     public function changeStaffHoursAction($id, $day, $month, $year) {
-        $staffHours = UserController::getOneDayUserStaff($id, $day, $month, $year);
+        $staffHours = Users::getOneDayUserStaff($id, $day, $month, $year);
         $user = Users::findFirst($id);
 
         $data['staffHours'] = $staffHours;
@@ -130,7 +130,6 @@ class AdminController extends ControllerBase
 
         $index = 0;
         $userArrivedTimes = [];
-        $allStarts = [];
 
         foreach ($users as $user) {
             $query = new StaffHours;
@@ -153,6 +152,7 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    // TO DO
     public function staffHoursEditAction() {
         if($this->request->isPost()) {
             $id = $this->request->getPost();
@@ -201,7 +201,7 @@ class AdminController extends ControllerBase
                 $user->fullName = $fullName;
                 $user->login = $login;
                 $user->email = $email;
-                $user->password = $password;
+                $user->password = $this->security->hash($password);
 
                 $user->update();
                 return $this->response->redirect('/admin');
@@ -229,7 +229,7 @@ class AdminController extends ControllerBase
             $user->fullName = $fullName;
             $user->login = $login;
             $user->email = $email;
-            $user->password = $password;
+            $user->password = $this->security->hash($password);
             $user->is_active = 1;
 
             $user->save();

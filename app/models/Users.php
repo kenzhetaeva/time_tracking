@@ -107,4 +107,86 @@ class Users extends \Phalcon\Mvc\Model
     {
         return parent::findFirst($parameters);
     }
+
+    public static function getUserStaff($userId, $month, $year)
+    {
+        $intervals = [];
+        $monthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        for($i = 1; $i <= $monthDays; $i++) {
+            $day = $year.'-'.$month.'-'.$i;
+            $userStaff = StaffHours::find([
+                'conditions' => 'user_id = :userId:
+                                and DATE(start_time) = :day:',
+                'bind' => [
+                    'userId' => $userId,
+                    'day' => $day,
+                ]
+            ])->toArray();
+
+            $interval = 0;
+            foreach ($userStaff as $uStaff) {
+                if($uStaff['stop_time'] != NULL) {
+                    $t1 = strtotime( $uStaff['start_time'] );
+                    $t2 = strtotime( $uStaff['stop_time'] );
+                    $diff = $t2 - $t1;
+                    $interval += $diff;
+                }
+            }
+            $intervals[] = $interval;
+        }
+
+        $thisMonth = $year.'-'.$month;
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :thisMonth:',
+            'bind' => [
+                'userId' => $userId,
+                'thisMonth' => "%$thisMonth%",
+            ]
+        ])->toArray();
+
+        $difference = 0;
+        foreach ($userStaff as $uStaff) {
+            if($uStaff['stop_time'] != NULL) {
+                $t1 = strtotime( $uStaff['start_time'] );
+                $t2 = strtotime( $uStaff['stop_time'] );
+                $diff = $t2 - $t1;
+                $difference += $diff;
+            }
+        }
+
+        return [$userStaff, $intervals];
+    }
+
+    public static function getTodayUserStaff($userId)
+    {
+        $today = date('Y-m-d');
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :today:',
+            'bind' => [
+                'userId' => $userId,
+                'today' => "%$today%",
+            ]
+        ])->toArray();
+
+
+        return $userStaff;
+    }
+
+    public static function getOneDayUserStaff($userId, $day, $month, $year)
+    {
+        $thisDay = date($year.'-'.$month.'-'.$day);
+        $userStaff = StaffHours::find([
+            'conditions' => 'user_id = :userId:
+                            and start_time like :day:',
+            'bind' => [
+                'userId' => $userId,
+                'day' => "%$thisDay%",
+            ]
+        ])->toArray();
+
+
+        return $userStaff;
+    }
 }

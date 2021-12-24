@@ -25,7 +25,10 @@ class IndexController extends ControllerBase
             $year = $this->request->get('year');
         }
 
-        $array = UserController::getUserStaff($this->session->get('AUTH_ID'), $month, $year);
+        $array = Users::getUserStaff($this->session->get('AUTH_ID'), $month, $year);
+
+        $staffHours = $array[0];
+        $intervals = $array[1];
 
         $holidays = Holidays::find();
         $holiday_days = [];
@@ -33,8 +36,12 @@ class IndexController extends ControllerBase
             $holiday_days[] = strtotime($holiday->holiday_day);
         }
 
-        $staffHours = $array[0];
-        $intervals = $array[1];
+        $monthDays = cal_days_in_month(CAL_GREGORIAN, (int)$month, (int)$year);
+        $firstDay = $year.'-'.$month.'-1';
+        $lastDay = $year.'-'.$month.'-'.$monthDays;
+
+        $monthStaffHours = 8 * Holidays::getWorkingDays($firstDay, $lastDay, $holiday_days);
+        $doneMonthStaff = number_format((float)((array_sum($intervals)) / 3600), 2, '.', '');
 
         $data['stopButtonActive'] = false;
         if (is_null($staffHours[count($staffHours)-1]['stop_time'])) {
@@ -45,6 +52,8 @@ class IndexController extends ControllerBase
         $this->view->setVars([
             'data' => $data,
             'holidays' => $holiday_days,
+            'doneMonthStaff' => $doneMonthStaff,
+            'monthStaffHours' => $monthStaffHours,
             'intervals' => $intervals,
             'thisMonth' => $month,
             'thisYear' => $year,

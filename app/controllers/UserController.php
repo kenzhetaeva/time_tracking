@@ -26,8 +26,8 @@ class UserController extends Controller
             ]);
 
             if ($user) {
-                if(strcmp($password, $user->password) == 0) {
-//                if ($this->security->checkHash($password, $user->password)) {
+//                if(strcmp($password, $user->password) == 0) {
+                if ($this->security->checkHash($password, $user->password)) {
 
                     $this->session->set('AUTH_ID', $user->id);
                     $this->session->set('AUTH_NAME', $user->fullName);
@@ -49,88 +49,6 @@ class UserController extends Controller
             $this->view->error = $error;
     }
 
-    public static function getUserStaff($userId, $month, $year)
-    {
-        $intervals = [];
-        $monthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        for($i = 1; $i <= $monthDays; $i++) {
-            $day = $year.'-'.$month.'-'.$i;
-            $userStaff = StaffHours::find([
-                'conditions' => 'user_id = :userId:
-                                and DATE(start_time) = :day:',
-                'bind' => [
-                    'userId' => $userId,
-                    'day' => $day,
-                ]
-            ])->toArray();
-
-            $interval = 0;
-            foreach ($userStaff as $uStaff) {
-                if($uStaff['stop_time'] != NULL) {
-                    $t1 = strtotime( $uStaff['start_time'] );
-                    $t2 = strtotime( $uStaff['stop_time'] );
-                    $diff = $t2 - $t1;
-                    $interval += $diff;
-                }
-            }
-            $intervals[] = $interval;
-        }
-
-        $thisMonth = $year.'-'.$month;
-        $userStaff = StaffHours::find([
-            'conditions' => 'user_id = :userId:
-                            and start_time like :thisMonth:',
-            'bind' => [
-                'userId' => $userId,
-                'thisMonth' => "%$thisMonth%",
-            ]
-        ])->toArray();
-
-        $difference = 0;
-        foreach ($userStaff as $uStaff) {
-            if($uStaff['stop_time'] != NULL) {
-                $t1 = strtotime( $uStaff['start_time'] );
-                $t2 = strtotime( $uStaff['stop_time'] );
-                $diff = $t2 - $t1;
-                $difference += $diff;
-            }
-        }
-
-        return [$userStaff, $intervals];
-    }
-
-    public static function getTodayUserStaff($userId)
-    {
-        $today = date('Y-m-d');
-        $userStaff = StaffHours::find([
-            'conditions' => 'user_id = :userId:
-                            and start_time like :today:',
-            'bind' => [
-                'userId' => $userId,
-                'today' => "%$today%",
-            ]
-        ])->toArray();
-
-
-        return $userStaff;
-    }
-
-    public static function getOneDayUserStaff($userId, $day, $month, $year)
-    {
-        $thisDay = date($year.'-'.$month.'-'.$day);
-        $userStaff = StaffHours::find([
-            'conditions' => 'user_id = :userId:
-                            and start_time like :day:',
-            'bind' => [
-                'userId' => $userId,
-                'day' => "%$thisDay%",
-            ]
-        ])->toArray();
-
-
-        return $userStaff;
-    }
-
     public function logoutAction() {
         $this->session->destroy();
         return $this->response->redirect('/login');
@@ -146,12 +64,12 @@ class UserController extends Controller
             $password1 = $this->request->getPost('password1');
             $password2 = $this->request->getPost('password2');
 
-            if($password1 != $password2) return $this->response->redirect('/changepassword');
+            if (!$this->security->checkHash($password2, $this->security->hash($password1))) return $this->response->redirect('/changepassword');
 
             $user = Users::findFirst($userId);
 
             if($user) {
-                $user->password = $password1;
+                $user->password = $this->security->hash($password1);
 
                 $user->update();
                 return $this->response->redirect('/mainpage');
