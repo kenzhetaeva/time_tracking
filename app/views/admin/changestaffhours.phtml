@@ -2,19 +2,19 @@
 
 <form action='/admin/staffhoursedit' method="post">
 
-    <?php foreach ($data['staffHours'] as $index => $staffHours) {
-
-        echo '<div class="staff_hours_child_' . $index . '">';?>
-    <div id="staff_hours">
+    <?php foreach ($data['staffHours'] as $index => $staffHours) { ?>
+    <div
+        <?php echo "id = 'start_$index'"?>>
 
         <label>Start <?php echo ($index+1).': '. strftime("%a %d %b, %Y", strtotime($staffHours['start_time']))?></label>
-        <input type="text" name=start+"<?php echo $index?>" value="<?php echo strftime("%H:%M", strtotime($staffHours['start_time'])) ?>">
+        <input type="text" name="<?php echo 'start_'.$index?>" value="<?php echo strftime("%H:%M", strtotime($staffHours['start_time'])) ?>">
     </div>
 
-    <p>
+    <div
+        <?php echo "id = 'stop_$index'"?>>
         <label>Stop <?php echo ($index+1).': '. strftime("%a %d %b, %Y", strtotime($staffHours['stop_time']))?></label>
-        <input type="text" name="<?php echo 'stop'.$index?>" value="<?php echo strftime("%H:%M", strtotime($staffHours['stop_time']))?>">
-    </p>
+        <input type="text" name="<?php echo 'stop_'.$index?>" value="<?php echo strftime("%H:%M", strtotime($staffHours['stop_time']))?>">
+    </div>
 
     <?php } ?>
 
@@ -22,6 +22,7 @@
     <input style="display: none" name="day" value="<?php echo $day?>">
     <input style="display: none" name="month" value="<?php echo $month?>">
     <input style="display: none" name="year" value="<?php echo $year?>">
+    <input style="display: none" name="amount" value="<?php echo count($staffHours)?>">
 
     <p>
         <input type='submit' value='Update' />

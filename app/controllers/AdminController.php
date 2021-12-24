@@ -55,7 +55,7 @@ class AdminController extends ControllerBase
     }
 
     public function changeStaffHoursAction($id, $day, $month, $year) {
-        $staffHours = Users::getOneDayUserStaff($id, $day, $month, $year);
+        $staffHours = (Users::getOneDayUserStaff($id, $day, $month, $year))->toArray();
         $user = Users::findFirst($id);
 
         $data['staffHours'] = $staffHours;
@@ -66,6 +66,40 @@ class AdminController extends ControllerBase
             'month' => $month,
             'year' => $year
         ]);
+    }
+
+    public function staffHoursEditAction() {
+        if($this->request->isPost()) {
+            $id = $this->request->getPost('id');
+            $day = $this->request->getPost('day');
+            $month = $this->request->getPost('month');
+            $year = $this->request->getPost('year');
+            $amount = $this->request->getPost('amount');
+            $allStarts = [];
+            $allStops = [];
+
+            for($i = 0; $i < $amount; $i++) {
+                $allStarts[] = $year.'-'.$month.'-'.$day.' '.$this->request->getPost('start_'.$i).':00';
+                $allStops[] = $year.'-'.$month.'-'.$day.' '.$this->request->getPost('stop_'.$i).':00';
+            }
+
+            $user = Users::findFirst($id);
+
+            if($user) {
+                $staffHours = Users::getOneDayUserStaff($id, $day, $month, $year);
+
+                $i = 0;
+                foreach ($staffHours as $staffHours) {
+                    $staffHours->start_time = $allStarts[$i];
+                    $staffHours->stop_time = $allStops[$i];
+                    $staffHours->update();
+
+                    $i++;
+                }
+
+                return $this->response->redirect('/admin/staffmonth/'.$id);
+            }
+        }
     }
 
     public function addHolidaysAction() {
@@ -150,13 +184,6 @@ class AdminController extends ControllerBase
             'users' => $users,
             'userArrivedTimes' => $userArrivedTimes
         ]);
-    }
-
-    // TO DO
-    public function staffHoursEditAction() {
-        if($this->request->isPost()) {
-            $id = $this->request->getPost();
-        }
     }
 
     public function userDeleteAction($id) {

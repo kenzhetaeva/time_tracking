@@ -26,7 +26,6 @@ class UserController extends Controller
             ]);
 
             if ($user) {
-//                if(strcmp($password, $user->password) == 0) {
                 if ($this->security->checkHash($password, $user->password)) {
 
                     $this->session->set('AUTH_ID', $user->id);

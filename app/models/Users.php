@@ -176,16 +176,15 @@ class Users extends \Phalcon\Mvc\Model
 
     public static function getOneDayUserStaff($userId, $day, $month, $year)
     {
-        $thisDay = date($year.'-'.$month.'-'.$day);
+        $day = $year.'-'.$month.'-'.$day;
         $userStaff = StaffHours::find([
             'conditions' => 'user_id = :userId:
-                            and start_time like :day:',
+                                and DATE(start_time) = :day:',
             'bind' => [
                 'userId' => $userId,
-                'day' => "%$thisDay%",
+                'day' => $day,
             ]
-        ])->toArray();
-
+        ]);
 
         return $userStaff;
     }
