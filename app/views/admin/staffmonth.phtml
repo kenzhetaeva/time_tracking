@@ -7,7 +7,6 @@
     }
 </style>
 <body>
-<?php //print_die($user); ?>
 <h3>Welcome to <?php echo $user->fullName?>'s Time Tracking</h3>
 
 <a href="/admin">Go back to Admin Panel</a>
@@ -35,15 +34,15 @@
         <th></th>
     </tr>
     <?php
-    $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
+    $monthDays = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
     for ($i = 1; $i <= $monthDays; $i++) { ?>
         <tr>
-            <td><?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear)) ?></td>
+            <td><?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$currentMonth.'-'.$currentYear)) ?></td>
             <td>
                 <div style="display: flex">
                     <div id="staff_hours">
                         <?php foreach ($data['staffHours'] as $index => $staffHours) {
-                            if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
+                            if(strftime("%d %b %Y", strtotime($staffHours['stop_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$currentMonth.'-'.$currentYear))) {
                                 echo '<div class="staff_hours_child_' . $index . '"><div class="start_' . $index . '">';
                                 echo strftime("%H:%M:%S", strtotime($staffHours['start_time'])).'-</div>';
                                 echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
@@ -57,7 +56,7 @@
             <td>
                 <?php echo gmdate("H:i:s", $intervals[$i-1]); ?>
             </td>
-            <td><a href="/admin/changestaffhours/<?php echo $user->id?>/<?php echo $i?>/<?php echo $thisMonth?>/<?php echo $thisYear?>">Edit</a></td>
+            <td><a href="/admin/changestaffhours/<?php echo $user->id?>/<?php echo $i?>/<?php echo $currentMonth?>/<?php echo $currentYear?>">Edit</a></td>
         </tr>
         <?php
     }
@@ -67,7 +66,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    let choosedMonth = '<?php echo $thisMonth ?>';
+    let choosedMonth = '<?php echo $currentMonth ?>';
     $('#selMonth').val("" + choosedMonth).change()
 
     $('select').on('change', function() {

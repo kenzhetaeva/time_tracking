@@ -48,15 +48,15 @@
 <!--        <button id="hide">Hide</button>-->
 <!--        <button id="show">Show</button>-->
         <?php
-        $monthDays = cal_days_in_month(CAL_GREGORIAN, $thisMonth, $thisYear);
+        $monthDays = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
         $isStart = false;
         for ($i = 1; $i <= $monthDays; $i++) { ?>
         <tr>
             <td>
-                <?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear));
-                $day = strtotime($thisYear.'-'.$thisMonth.'-'.$i);
+                <?php echo strftime("%a %d %b, %Y", strtotime($i.'-'.$currentMonth.'-'.$currentYear));
+                $day = strtotime($currentYear.'-'.$currentMonth.'-'.$i);
                 $dayofweek = date('w', $day);
-                $holiday_day = strtotime($thisYear.'-'.$thisMonth.'-'.$i.' 00:00:00');
+                $holiday_day = strtotime($currentYear.'-'.$currentMonth.'-'.$i.' 00:00:00');
                 if($dayofweek == 0 || $dayofweek == 6 || in_array($holiday_day, $holidays)) {?>
                     <input type="checkbox" disabled >
                 <?php }
@@ -67,22 +67,22 @@
                 <td>
                     <div
                         <?php
-                        if (strftime("%d %b %Y", strtotime($i . '-' . $thisMonth . '-' . $thisYear)) == strftime("%d %b %Y", time())) {
+                        if (strftime("%d %b %Y", strtotime($i . '-' . $currentMonth . '-' . $currentYear)) == strftime("%d %b %Y", time())) {
                             echo "id = 'today'";
                         }
                         ?>
                         >
                         <div id="staff_hours">
                             <?php
-                            if(strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))==strftime("%d %b %Y", time())) {
+                            if(strftime("%d %b %Y", strtotime($i.'-'.$currentMonth.'-'.$currentYear))==strftime("%d %b %Y", time())) {
                                 $isStart = true;?>
                                 <input style="display: none" id="today" value="<?php echo $i?>">
-                                <input style="display: none" id="month" value="<?php echo $thisMonth?>">
-                                <input style="display: none" id="year" value="<?php echo $thisYear?>">
+                                <input style="display: none" id="month" value="<?php echo $currentMonth?>">
+                                <input style="display: none" id="year" value="<?php echo $currentYear?>">
                             <?php
                             }
                             foreach ($data['staffHours'] as $index => $staffHours) {
-                                if(strftime("%d %b %Y", strtotime($staffHours['start_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$thisMonth.'-'.$thisYear))) {
+                                if(strftime("%d %b %Y", strtotime($staffHours['start_time'])) == strftime("%d %b %Y", strtotime($i.'-'.$currentMonth.'-'.$currentYear))) {
                                     echo '<div class="staff_hours_child_' . $index . '">';
                                     echo '<div class="start_' . $index . '">';
                                     echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
@@ -111,7 +111,7 @@
                 <td>
                     <div
                         <?php
-                        if (strftime("%d %b %Y", strtotime($i . '-' . $thisMonth . '-' . $thisYear)) == strftime("%d %b %Y", time())) {
+                        if (strftime("%d %b %Y", strtotime($i . '-' . $currentMonth . '-' . $currentYear)) == strftime("%d %b %Y", time())) {
                             echo "id = 'today_int'";
                         }
                         ?>
@@ -129,7 +129,7 @@
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
         <script>
-            let choosedMonth = '<?php echo $thisMonth ?>'
+            let choosedMonth = '<?php echo $currentMonth ?>'
             $('#months').val("" + choosedMonth).change()
 
             $('select').on('change', function() {

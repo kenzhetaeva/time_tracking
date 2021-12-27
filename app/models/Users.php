@@ -141,13 +141,13 @@ class Users extends \Phalcon\Mvc\Model
             $intervals[] = $interval;
         }
 
-        $thisMonth = $year.'-'.$month;
+        $choosedMonth = $year.'-'.$month;
         $userStaff = StaffHours::find([
             'conditions' => 'user_id = :userId:
-                            and start_time like :thisMonth:',
+                            and start_time like :choosedMonth:',
             'bind' => [
                 'userId' => $userId,
-                'thisMonth' => "%$thisMonth%",
+                'choosedMonth' => "%$choosedMonth%",
             ]
         ])->toArray();
 

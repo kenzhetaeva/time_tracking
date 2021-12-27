@@ -50,8 +50,8 @@ class AdminController extends ControllerBase
             'user' => $user,
             'data' => $data,
             'intervals' => $intervals,
-            'thisMonth' => $month,
-            'thisYear' => $year,
+            'currentMonth' => $month,
+            'currentYear' => $year,
         ]);
     }
 
@@ -115,8 +115,6 @@ class AdminController extends ControllerBase
             $holiday = $this->request->getPost('holiday');
             $isRepeated = $this->request->getPost('isRepeated');
             $day = date($holiday.' 00:00:00');
-
-            $year = date('Y', strtotime($day));
 
             if($isRepeated == 'on') {
                 for($i = 0; $i < 10; $i++) {

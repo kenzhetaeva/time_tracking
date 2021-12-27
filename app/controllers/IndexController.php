@@ -57,8 +57,8 @@ class IndexController extends ControllerBase
             'doneMonthStaff' => $doneMonthStaff,
             'monthStaffHours' => $monthStaffHours,
             'intervals' => $intervals,
-            'thisMonth' => $month,
-            'thisYear' => $year,
+            'currentMonth' => $month,
+            'currentYear' => $year,
         ]);
     }
 
