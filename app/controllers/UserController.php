@@ -6,6 +6,7 @@ use Phalcon\Security;
 
 class UserController extends Controller
 {
+    // user login
     /**
      * @property Request  $request
      * @property Security $security
@@ -32,6 +33,7 @@ class UserController extends Controller
                     $this->session->set('AUTH_NAME', $user->fullName);
                     $this->session->set('AUTH_LOGIN', $user->login);
                     $this->session->set('AUTH_EMAIL', $user->email);
+                    $this->session->set('AUTH_ROLE', $user->role);
 
                     return $this->response->redirect('/mainpage');
                 }
@@ -48,15 +50,18 @@ class UserController extends Controller
             $this->view->error = $error;
     }
 
+    // user logout
     public function logoutAction() {
         $this->session->destroy();
         return $this->response->redirect('/login');
     }
 
+    // redirects to form to change password
     public function changePasswordAction() {
 
     }
 
+    // changes user's password
     public function changeUserPasswordAction() {
         if($this->request->isPost()) {
             $userId = $this->request->getPost('id');

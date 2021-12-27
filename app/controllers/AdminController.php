@@ -7,13 +7,14 @@ use Phalcon\Security;
 
 class AdminController extends ControllerBase
 {
+    // shows list of users and their arrived times for today
     public function dashboardAction() {
 
         $this->authorized();
 
-        $userLogin = $this->session->get('AUTH_LOGIN');
+        $userRole = $this->session->get('AUTH_ROLE');
 
-        if(strcmp($userLogin, 'admin') == 0 ) {
+        if(strcmp($userRole, 'admin') == 0 ) {
             $users = Users::find([
                 'conditions' => 'is_active = 1'
             ]);
@@ -33,6 +34,7 @@ class AdminController extends ControllerBase
             return $this->response->redirect('/checkadmin');
     }
 
+    // shows all start/stops(for month) for single user
     public function staffMonthAction($id) {
         $month = date('m');
         $year = date('Y');
@@ -44,7 +46,6 @@ class AdminController extends ControllerBase
         $intervals = $array[1];
         $data['staffHours'] = $staffHours;
 
-//        print_die($staffHours);
         $this->view->setVars([
             'user' => $user,
             'data' => $data,
@@ -54,6 +55,7 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    // redirects to form to change user's staff hours for one day
     public function changeStaffHoursAction($id, $day, $month, $year) {
         $staffHours = (Users::getOneDayUserStaff($id, $day, $month, $year))->toArray();
         $user = Users::findFirst($id);
@@ -68,6 +70,7 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    // changes user's start/stops for one day
     public function staffHoursEditAction() {
         if($this->request->isPost()) {
             $id = $this->request->getPost('id');
@@ -102,9 +105,11 @@ class AdminController extends ControllerBase
         }
     }
 
+    // redirects to form to add holiday day
     public function addHolidaysAction() {
     }
 
+    // adds new holiday day
     public function editHolidaysAction() {
         if($this->request->isPost()) {
             $holiday = $this->request->getPost('holiday');
@@ -117,10 +122,10 @@ class AdminController extends ControllerBase
                 for($i = 0; $i < 10; $i++) {
                     $futureDate=date('Y-m-d H:i:s', strtotime('+'.$i.' year', strtotime($day)) );
 
-                    $new_holiday = new Holidays();
-                    $new_holiday->holiday_day = $futureDate;
+                    $newHoliday = new Holidays();
+                    $newHoliday->holiday_day = $futureDate;
 
-                    $new_holiday->save();
+                    $newHoliday->save();
                 }
             }
 
@@ -128,23 +133,25 @@ class AdminController extends ControllerBase
         }
     }
 
+    // redirects to form to change beginning of working day
     public function changeWorkHourAction() {
         $user = Users::findFirst();
-        $workhour_start = $user->workhour_start;
+        $workhourStart = $user->workhour_start;
 
         $this->view->setVars([
-            'workhour_start' => $workhour_start
+            'workhour_start' => $workhourStart
         ]);
     }
 
+    // changes beginning of working day
     public function editWorkHourAction() {
         if($this->request->isPost()) {
-            $workhour_start = $this->request->getPost('workhour_start');
+            $workhourStart = $this->request->getPost('workhour_start');
 
             $users = Users::find();
 
             if($users) {
-                $hour = date('2000-01-01 '.$workhour_start);
+                $hour = date('2000-01-01 '.$workhourStart);
 
                 foreach ($users as $user) {
                     $user->workhour_start = $hour;
@@ -156,6 +163,7 @@ class AdminController extends ControllerBase
         }
     }
 
+    // shows latecomers for all time
     public function showLateComersAction() {
 
         $users = Users::find([
@@ -186,18 +194,21 @@ class AdminController extends ControllerBase
         ]);
     }
 
+    // deletes user (sets user as inactive)
     public function userDeleteAction($id) {
 
         $user = Users::findFirst($id);
 
         if($user) {
             $user->is_active = 0;
+            $user->role = 'guest';
             $user->update();
             return $this->response->redirect('/admin');
         }
     }
 
 
+    // redirect to form to edit user information(login, fullName, email, password)
     public function userEditAction($id) {
 
         $user = Users::findFirst($id);
@@ -207,6 +218,7 @@ class AdminController extends ControllerBase
         }
     }
 
+    // updates information about one user
     /**
      * @property Request $request
      */
@@ -236,10 +248,12 @@ class AdminController extends ControllerBase
         }
     }
 
+    // redirects to form to add new user
     public function userAddAction() {
 
     }
 
+    // adds new user
     /**
      * @property Request $request
      */
@@ -258,6 +272,7 @@ class AdminController extends ControllerBase
             $user->email = $email;
             $user->password = $this->security->hash($password);
             $user->is_active = 1;
+            $user->role = 'user';
 
             $user->save();
             return $this->response->redirect('/admin');

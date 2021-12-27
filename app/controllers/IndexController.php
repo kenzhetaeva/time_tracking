@@ -7,6 +7,7 @@ use Phalcon\Http\Response;
 class IndexController extends ControllerBase
 {
 
+    // checks is authorized, if not redirects to login page, otherwise - to main page
     public function indexAction()
     {
         $this->authorized();
@@ -14,6 +15,7 @@ class IndexController extends ControllerBase
 
     }
 
+    // user's profile page - tracking his personal staff hours
     public function mainPageAction() {
         $this->authorized();
         $month = date('m');
@@ -31,16 +33,16 @@ class IndexController extends ControllerBase
         $intervals = $array[1];
 
         $holidays = Holidays::find();
-        $holiday_days = [];
+        $holidayDays = [];
         foreach ($holidays as $holiday) {
-            $holiday_days[] = strtotime($holiday->holiday_day);
+            $holidayDays[] = strtotime($holiday->holiday_day);
         }
 
         $monthDays = cal_days_in_month(CAL_GREGORIAN, (int)$month, (int)$year);
         $firstDay = $year.'-'.$month.'-1';
         $lastDay = $year.'-'.$month.'-'.$monthDays;
 
-        $monthStaffHours = 8 * Holidays::getWorkingDays($firstDay, $lastDay, $holiday_days);
+        $monthStaffHours = 8 * Holidays::getWorkingDays($firstDay, $lastDay, $holidayDays);
         $doneMonthStaff = number_format((float)((array_sum($intervals)) / 3600), 2, '.', '');
 
         $data['stopButtonActive'] = false;
@@ -51,7 +53,7 @@ class IndexController extends ControllerBase
 
         $this->view->setVars([
             'data' => $data,
-            'holidays' => $holiday_days,
+            'holidays' => $holidayDays,
             'doneMonthStaff' => $doneMonthStaff,
             'monthStaffHours' => $monthStaffHours,
             'intervals' => $intervals,
@@ -60,6 +62,7 @@ class IndexController extends ControllerBase
         ]);
     }
 
+    // if start button pressed
     public function startAction()
     {
         if ($this->request->isPost()) {
@@ -73,6 +76,7 @@ class IndexController extends ControllerBase
         }
     }
 
+    // if stop button pressed
     public function stopAction()
     {
         if ($this->request->isPost()) {
@@ -89,14 +93,17 @@ class IndexController extends ControllerBase
         }
     }
 
+    // redirects to view - if user is admin
     public function checkAdminAction() {
 
     }
 
+    // shows error 404
     public function show404Action() {
 
     }
 
+    // shows error 503
     public function show503Action() {
 
     }

@@ -4,6 +4,7 @@ use Phalcon\Mvc\Controller;
 
 class ControllerBase extends Controller
 {
+    // if user is authorized
     public function authorized() {
         if(!$this->isLoggedIn()) {
             return $this->response->redirect('/login');

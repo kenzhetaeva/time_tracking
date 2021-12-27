@@ -5,6 +5,7 @@ use Phalcon\Mvc\Controller;
 
 class TrackingController extends Controller
 {
+    // returns user's last added start_time
     public static function startAction(int $userId) {
         $response = [
             'success' => false
@@ -28,6 +29,7 @@ class TrackingController extends Controller
         return $response;
     }
 
+    // returns user's last added stop_time
     public static function stopAction(int $userId, $day, $month, $year) {
         $response = [
             'success' => false

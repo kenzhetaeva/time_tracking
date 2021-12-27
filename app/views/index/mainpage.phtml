@@ -87,11 +87,11 @@
                                     echo '<div class="start_' . $index . '">';
                                     echo strftime("%H:%M:%S", strtotime($staffHours['start_time']));
                                     echo '-</div>';
-//                                    if(!$data['stopButtonActive']) {
-                                        echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time'])) ?? "";
+                                    if($staffHours['stop_time']) {
+                                        echo '<div class="stop_' . $index . '">' . strftime("%H:%M:%S", strtotime($staffHours['stop_time']));
                                         echo '</div>';
-                                        echo '</div><br>';
-//                                    }
+                                    }
+                                    echo '</div><br>';
                                 }
                             } ?>
                         </div>
