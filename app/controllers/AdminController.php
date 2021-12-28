@@ -30,8 +30,9 @@ class AdminController extends ControllerBase
             $this->view->users = $users;
             $this->view->userArrivedTimes = $userArrivedTimes;
         }
-        else if($this->isLoggedIn())
+        else if($this->isLoggedIn()) {
             return $this->response->redirect('/checkadmin');
+        }
     }
 
     // shows all start/stops(for month) for single user

@@ -46,8 +46,9 @@ class UserController extends Controller
                 $this->view->error = $error;
             }
         }
-        if($error == "")
+        if($error == "") {
             $this->view->error = $error;
+        }
     }
 
     // user logout
@@ -68,7 +69,9 @@ class UserController extends Controller
             $password1 = $this->request->getPost('password1');
             $password2 = $this->request->getPost('password2');
 
-            if (!$this->security->checkHash($password2, $this->security->hash($password1))) return $this->response->redirect('/changepassword');
+            if (!$this->security->checkHash($password2, $this->security->hash($password1))) {
+                return $this->response->redirect('/changepassword');
+            }
 
             $user = Users::findFirst($userId);
 

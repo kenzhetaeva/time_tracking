@@ -46,6 +46,7 @@ class Holidays extends \Phalcon\Mvc\Model
         return parent::findFirst($parameters);
     }
 
+    // returns amount of working days between 2 given dates(excludes holiday too)
     public static function getWorkingDays($startDate, $endDate, $holidays)
     {
         $endDate = strtotime($endDate);
@@ -60,8 +61,12 @@ class Holidays extends \Phalcon\Mvc\Model
         $the_last_day_of_week = date("N", $endDate);
 
         if ($the_first_day_of_week <= $the_last_day_of_week) {
-            if ($the_first_day_of_week <= 6 && 6 <= $the_last_day_of_week) $no_remaining_days--;
-            if ($the_first_day_of_week <= 7 && 7 <= $the_last_day_of_week) $no_remaining_days--;
+            if ($the_first_day_of_week <= 6 && 6 <= $the_last_day_of_week) {
+                $no_remaining_days--;
+            }
+            if ($the_first_day_of_week <= 7 && 7 <= $the_last_day_of_week) {
+                $no_remaining_days--;
+            }
         } else {
 
             if ($the_first_day_of_week == 7) {
@@ -82,8 +87,9 @@ class Holidays extends \Phalcon\Mvc\Model
 
         foreach ($holidays as $holiday) {
             $time_stamp = $holiday;
-            if ($startDate <= $time_stamp && $time_stamp <= $endDate && date("N", $time_stamp) != 6 && date("N", $time_stamp) != 7)
+            if ($startDate <= $time_stamp && $time_stamp <= $endDate && date("N", $time_stamp) != 6 && date("N", $time_stamp) != 7) {
                 $workingDays--;
+            }
         }
 
         return $workingDays;

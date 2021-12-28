@@ -114,6 +114,7 @@ class Users extends \Phalcon\Mvc\Model
         return parent::findFirst($parameters);
     }
 
+    // returns all staff hours for choosen month and year & отработанные часы
     public static function getUserStaff($userId, $month, $year)
     {
         $intervals = [];
@@ -154,6 +155,7 @@ class Users extends \Phalcon\Mvc\Model
         return [$userStaff, $intervals];
     }
 
+    // returns staff hours for today
     public static function getTodayUserStaff($userId)
     {
         $today = date('Y-m-d');
@@ -170,6 +172,7 @@ class Users extends \Phalcon\Mvc\Model
         return $userStaff;
     }
 
+    // returns staff hours for given day
     public static function getOneDayUserStaff($userId, $day, $month, $year)
     {
         $day = $year.'-'.$month.'-'.$day;
